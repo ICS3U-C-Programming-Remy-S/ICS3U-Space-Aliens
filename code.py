@@ -13,7 +13,7 @@ def game_scene():
     print("Hello, REMY SKELETON")
 
 
-    #a forever loop
+    # a forever loop
     while True:
         pass # place holder
 
