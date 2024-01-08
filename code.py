@@ -8,6 +8,7 @@
 
 import stage
 import ugame
+import constants
 
 
 def game_scene():
@@ -21,7 +22,7 @@ def game_scene():
 
     # set the background to the 0 image from image bank
     # the size will be (10x8 tiles of sixe 16x16)
-    background = stage.Grid(image_bank_background, 10, 8)
+    background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
 
 
     # a sprite that will update every frame with te background
@@ -30,7 +31,7 @@ def game_scene():
 
     # create the stage for the background to show
     # frames at 60 fps
-    game = stage.Stage(ugame.display, 60)
+    game = stage.Stage(ugame.display, constants.FPS)
     # set the layers of all the sprites, items to show in order
     game.layers = [ship] + [background]
     # render the sprites
@@ -45,21 +46,33 @@ def game_scene():
 
 
         if keys & ugame.K_X:
-            print("A")
+            pass
         if keys & ugame.K_O:
-            print("B")
+            pass
         if keys & ugame.K_START:
-            print("Start")
+            pass
         if keys & ugame.K_SELECT:
-            print("Select")
+            pass
         if keys & ugame.K_RIGHT:
-            ship.move(ship.x + 1, ship.y)
+            if ship.x <= 144:
+                ship.move(ship.x + 1, ship.y)
+            else:
+                ship.move(0, ship.y)
         if keys & ugame.K_LEFT:
-            ship.move(ship.x - 1, ship.y)
+            if ship.x >= 0:
+                ship.move(ship.x - 1, ship.y)
+            else:
+                ship.move(constants.SCREEN_X - 16, ship.y)
         if keys & ugame.K_UP:
-            ship.move(ship.x, ship.y - 1)
+            if ship.y >= 0:
+                ship.move(ship.x, ship.y - 1)
+            else:
+                ship.move(ship.x, 0)
         if keys & ugame.K_DOWN:
-            ship.move(ship.x, ship.y + 1)
+            if ship.y <= 120:
+                ship.move(ship.x, ship.y + 1)
+            else:
+                ship.move(ship.x, 120)
         # update the logic of the game
 
 
@@ -71,4 +84,4 @@ def game_scene():
 
 
 if __name__ == "__main__":
-    game_scene
+    game_scene()
