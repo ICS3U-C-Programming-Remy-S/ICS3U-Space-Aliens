@@ -18,6 +18,17 @@ def menu_scene():
     # image banks for CircuitPython
     image_bank_background = stage.Bank.from_bmp16("space_aliens_background.bmp")
 
+    # add text object
+    text = []
+    text1 = stage.Text(width=29, height=12, font=None, palette=constants.RED_PALETTE, buffer=None)
+    text1.move(20,10)
+    text1.text("MT Game Studios")
+    text.append(text1)
+
+    text2 = stage.Text(width=29, height=12, font=None, palette=constants.RED_PALETTE, buffer=None)
+    text2.move(40,110)
+    text2.text("PRESS START")
+    text.append(text2)
 
     # set the background to the 0 image from image bank
     # the size will be (10x8 tiles of sixe 16x16)
@@ -28,7 +39,7 @@ def menu_scene():
     game = stage.Stage(ugame.display, constants.FPS)
 
     # set the layers, so the item show up in order
-    game.layers = [background]
+    game.layers = text + [background]
     # render the sprites
     # render the game scene once per scene
     game.render_block()
@@ -41,6 +52,8 @@ def menu_scene():
 
         if keys & ugame.K_START != 0:
             game_scene()
+
+        # redraw the sprites
         game.tick()
 
 
