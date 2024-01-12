@@ -158,11 +158,15 @@ def splash_scene():
 def game_scene():
     # this function is the code create the main game scene
     
+    # set score
+    score = 0
+
     def show_alien():
         # take the alien that are off screen and puts them back on
         for alien_number in range(len(aliens)):
             if aliens[alien_number].x < 0:
-                aliens[alien_number].move(random.randint(0 + constants.SPRITE_SIZE, constants.SCREEN_X - constants.SPRITE_SIZE), constants.OFF_TOP_SCREEN)
+                aliens[alien_number].move(random.randint(0 + constants.SPRITE_SIZE,
+                                                         constants.SCREEN_X - constants.SPRITE_SIZE), constants.OFF_TOP_SCREEN)
                 break
 
     # image banks for CircuitPython
@@ -184,7 +188,9 @@ def game_scene():
 
     # set the background to the 0 image from image bank
     # the size will be (10x8 tiles of sixe 16x16)
-    background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
+    background = stage.Grid(image_bank_background,
+                            constants.SCREEN_GRID_X,
+                            constants.SCREEN_GRID_Y)
 
     for x_location in range(constants.SCREEN_GRID_X):
         for y_location in range(constants.SCREEN_GRID_Y):
@@ -202,7 +208,7 @@ def game_scene():
     # 1 alien on screen
     show_alien()
 
-    # create a list for the lazer to shoot
+    # create a list for the laser to shoot
     lasers = []
     for lazer_number in range(constants.TOTAL_NUMBER_OF_LASERS):
         a_single_laser = stage.Sprite(image_bank_sprites, 10, constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
@@ -277,16 +283,36 @@ def game_scene():
             if lasers[laser_number].x > 0:
                 lasers[laser_number].move(lasers[laser_number].x, lasers[laser_number].y - constants.LASER_SPEED)
                 if lasers[laser_number].y < constants.OFF_TOP_SCREEN:
-                    lasers[laser_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                    lasers[laser_number].move(constants.OFF_SCREEN_X,
+                                              constants.OFF_SCREEN_Y)
 
         # each frame to move lasers that has shot
         for alien_number in range(len(aliens)):
             if aliens[alien_number].x > 0:
-                aliens[alien_number].move(aliens[alien_number].x, aliens[alien_number].y + constants.ALIEN_SPEED)
+                aliens[alien_number].move(aliens[alien_number].x,
+                                          aliens[alien_number].y + constants.ALIEN_SPEED)
                 if aliens[alien_number].y > constants.SCREEN_Y:
-                    aliens[alien_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                    aliens[alien_number].move(constants.OFF_SCREEN_X,
+                                              constants.OFF_SCREEN_Y)
                     show_alien()
-
+        
+        for laser_number in range(len(lasers)):
+            if lasers[laser_number].x > 0:
+                for alien_number in range(len(aliens)):
+                    if aliens[alien_number].x > 0:
+                        if stage.collide(lasers[laser_number].x, lasers[laser_number].y,
+                                        lasers[laser_number].x + 16, lasers[laser_number].y +16,
+                                        aliens[alien_number].x, aliens[alien_number].y,
+                                        aliens[alien_number].x +16, aliens[alien_number].y +16):
+                            # alien was hit
+                            aliens[alien_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                            lasers[laser_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                            boom_sound = open("boom.wav", 'rb')
+                            sound.stop()
+                            sound.play(boom_sound)
+                            show_alien()
+                            show_alien()
+                            score = score + 1
         # only refresh the sprite
         game.render_sprites(lasers + [ship] + aliens)
         game.tick()
