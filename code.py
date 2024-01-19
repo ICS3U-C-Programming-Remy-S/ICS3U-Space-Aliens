@@ -15,7 +15,7 @@ import supervisor
 
 
 def menu_scene():
-    # this function is the code create the main game scene
+    # this function is the code create the menu scene
 
 
     # image banks for CircuitPython
@@ -58,9 +58,11 @@ def menu_scene():
         # get the user input
         keys = ugame.buttons.get_pressed()
 
+        # go to game scene
         if keys & ugame.K_START != 0:
             game_scene()
 
+        # go to info scene
         if keys & ugame.K_SELECT != 0:
             info_scene()
 
@@ -70,7 +72,8 @@ def menu_scene():
 
 
 def info_scene():
-    # this function is the code create the main game scene
+    # this function is the code create the information scene
+    # play sound when scene is opened
     info_sound = open("gunshot_echo.wav", 'rb')
     sound = ugame.audio
     sound.stop()
@@ -85,7 +88,7 @@ def info_scene():
     text = []
     text1 = stage.Text(width=29, height=12, font=None, palette=constants.RED_PALETTE, buffer=None)
     text1.move(10,10)
-    text1.text("Use A to Shoot\nAlien = 1 point\nMove with dpad\nHit = -1 life")
+    text1.text("Use A to Shoot\nAlien= 1 point\nMove with dpad\nHit = -1 life\n10 to lvl up\n25 to win\nB to boost\nSelect to mute\nlvl + 1 life\nAliens deal double damage")
     text.append(text1)
 
     text2 = stage.Text(width=29, height=12, font=None, palette=constants.RED_PALETTE, buffer=None)
@@ -113,6 +116,7 @@ def info_scene():
         # get the user input
         keys = ugame.buttons.get_pressed()
 
+        # when down is clicked it goes back to menu
         if keys & ugame.K_DOWN != 0:
             menu_scene()
 
@@ -236,7 +240,7 @@ def game_scene():
     score_text.move(1,1)
     score_text.text(f"Score: {score}")
 
-    # set highscore 
+    # set highscore and display
     high_score = 0
 
     high_score_text = stage.Text(width = 29, height = 14)
@@ -272,7 +276,7 @@ def game_scene():
     sound = ugame.audio
     sound.stop()
     sound.mute(False)
-
+    # play sound at start of scene
     sound.play(intro_sound)
     time.sleep(2.0)
 
@@ -296,7 +300,7 @@ def game_scene():
     # list of aliens to have more than 1
     aliens = []
     for alien_number in range(constants.TOTAL_NUMBER_OF_ALIENS):
-        a_single_alien = stage.Sprite(image_bank_sprites, 7, constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+        a_single_alien = stage.Sprite(image_bank_sprites, 8, constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
         aliens.append(a_single_alien)
     # 1 alien on screen
     show_alien()
@@ -323,7 +327,7 @@ def game_scene():
         # get the user input
         keys = ugame.buttons.get_pressed()
 
-        # take player to win scene
+        # take player to lvl 2 scene
         if score == 10:
             time.sleep(1.0)
             game_lvl_2(score, high_score)
@@ -340,7 +344,7 @@ def game_scene():
             else:
                 a_button = constants.button_state["button_up"]
 
-       # check if B button is being pressed
+       # button B for boost
         if keys & ugame.K_X != 0:
             if b_button == constants.button_state["button_up"]:
                 # change to just pressed
@@ -372,7 +376,7 @@ def game_scene():
                 ugame.audio.mute(True)
                 is_muted = True
 
-
+        # Movement for ship
         if keys & ugame.K_RIGHT:
             if ship.x <= constants.SCREEN_X - constants.SPRITE_SIZE:
                 ship.move(ship.x + constants.SHIP_SPEED, ship.y)
@@ -481,11 +485,12 @@ def game_scene():
         game.tick()
 
 def game_lvl_2(score, high_score):
-    # this function is the code create the main game scene
+    # this function is the code create the 2nd game scene
+    
     # mute variable
     global is_muted
     # Initialize lives
-    lives = 3
+    lives = 4
 
     # Create text for lives display
     lives_text = stage.Text(width=29, height=14)
@@ -531,7 +536,7 @@ def game_lvl_2(score, high_score):
     # sound to play
     pew_sound = open("rdr_shot.wav", 'rb')
     boom_sound = open("rdr_death.wav", 'rb')
-    crash_sound = open("t1_be_back.wav", 'rb')
+    crash_sound = open("gunshot_echo.wav", 'rb')
     music_sound = open("good_bad_ugly.wav", 'rb')
     intro_sound = open("dyin_livin.wav", 'rb')
     sound = ugame.audio
@@ -561,7 +566,7 @@ def game_lvl_2(score, high_score):
     # list of aliens to have more than 1
     aliens = []
     for alien_number in range(constants.TOTAL_NUMBER_OF_ALIENS_lvl_2):
-        a_single_alien = stage.Sprite(image_bank_sprites, 8, constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+        a_single_alien = stage.Sprite(image_bank_sprites, 9, constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
         aliens.append(a_single_alien)
     # 1 alien on screen
     show_alien()
@@ -727,8 +732,8 @@ def game_lvl_2(score, high_score):
                     # When alien hits ship
                     sound.stop()
                     sound.play(crash_sound)
-                    # Deduct a life
-                    lives -= 1
+                    # Deduct 2 lives
+                    lives -= 2
                     lives_text.clear()
                     lives_text.cursor(0, 0)
                     lives_text.move(89, 1)
@@ -799,7 +804,7 @@ def game_over_scene(final_score, high_score):
         game.tick()
 
 def win_scene(final_score):
-    # the game over function
+    # the win scene function
 
     # play win music sound for win
     music_sound = open("good_bad_ugly.wav", 'rb')
